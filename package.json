@@ -1,0 +1,19 @@
+{
+  "name": "polkadot-prac",
+  "version": "1.0.0",
+  "main": "src/main.ts",
+  "repository": "https://github.com/vfptr/polkadot-prac",
+  "author": "Lucas",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/jest": "^29.5.0",
+    "@types/node": "^18.15.11",
+    "@typescript-eslint/eslint-plugin": "^5.57.0",
+    "@typescript-eslint/parser": "^5.57.0",
+    "eslint": "^8.37.0",
+    "jest": "^29.5.0",
+    "ts-jest": "^29.0.5",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.3"
+  }
+}
