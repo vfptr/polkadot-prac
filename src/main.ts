@@ -1,34 +1,30 @@
 import { ApiPromise, WsProvider } from '@polkadot/api'
-import { EventRecord } from '@polkadot/types/interfaces/system';
 
 const WEB_SOCKET = 'ws://localhost:9944'
 
 async function main() {
-    subscribePalletEvent('poe')
+    queryOffchainStorage();
 }
 
-// subscribe events from a particular pallet by filtering all system event by event.section
-async function subscribePalletEvent(pallet: string) {
+// query off-chain storage, which is tuple struct with 2 field.
+async function queryOffchainStorage() {
     const provider = new WsProvider(WEB_SOCKET);
-    const api = await ApiPromise.create({ provider });
-
-    // Subscribe to system events via storage
-    api.query.system.events((events: EventRecord[]) => {
-        
-        // Loop through the Vec<EventRecord>
-        events.forEach((record) => {
-            const { event, phase } = record;
-            const types = event.typeDef;
-            if (event.section == pallet){
-                console.log(`${event.section} : ${event.method}:: (phase=${phase.toString()})`);
-                console.log(`\t${event.meta.docs.toString()}`);
-                // Loop through each of the parameters, displaying the type and data
-                event.data.forEach((data, index) => {
-                    console.log(`\t\t${types[index].type}: ${data.toString()}`);
-                });
-            }
-        });
+    const api = await ApiPromise.create({ provider: provider, 
+        types: { 
+            IndexingData: { title:"Text", value: "u64" } 
+        } 
     });
+
+    try {
+        const key = 'my_pallet::indexing1';
+        const respon = await api.rpc.offchain.localStorageGet('PERSISTENT', key);
+        const decoded_data = api.createType("IndexingData", respon.unwrap());
+        console.log(`offchain sotrage ${key} = `, decoded_data.toJSON());
+    } catch (error) {
+        console.error('error when query：', error);
+    } finally {
+        provider.disconnect();
+    }
 }
 
 main().catch((error) => {
